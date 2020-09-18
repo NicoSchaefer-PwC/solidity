@@ -1147,6 +1147,62 @@ string YulUtilFunctions::clearStorageArrayFunction(ArrayType const& _type)
 	});
 }
 
+string YulUtilFunctions::clearStorageStructFunction(StructType const& _type)
+{
+	solAssert(_type.location() == DataLocation::Storage, "");
+
+	string functionName = "clear_struct_storage_" + _type.identifier();
+
+	return m_functionCollector.createFunction(functionName, [&] {
+		MemberList::MemberMap structMembers = _type.nativeMembers(nullptr);
+		vector<map<string, string>> memberSetValues;
+
+		set<u256> slotsCleared;
+		for (auto const& member: structMembers)
+			if (member.type->storageBytes() < 32)
+			{
+				// TODO: if optimizer is able to optimize out to one sstore we can do same as in else branch in each case
+				solAssert(member.type->isValueType(), "");
+				u256 const& slotDiff = _type.storageOffsetsOfMember(member.name).first;
+				if (slotsCleared.count(slotDiff) == 0)
+				{
+					memberSetValues.emplace_back().emplace(
+						"clearMember",
+						"sstore(add(slot, " + slotDiff.str() + "), 0)"
+					);
+					slotsCleared.emplace(slotDiff);
+				}
+			}
+			else
+			{
+				auto const& [memberSlotDiff, memberStorageOffset] = _type.storageOffsetsOfMember(member.name);
+				solAssert(memberStorageOffset == 0, "");
+
+				memberSetValues.emplace_back().emplace("clearMember", Whiskers(R"(
+						<setZero>(add(slot, <memberSlotDiff>), <memberStorageOffset>)
+					)")
+					("setZero", storageSetToZeroFunction(*member.type))
+					("memberSlotDiff",  memberSlotDiff.str())
+					("memberStorageOffset", to_string(memberStorageOffset))
+					.render()
+				);
+			}
+
+		return Whiskers(R"(
+			function <functionName>(slot) {
+				<#member>
+					<clearMember>
+				</member>
+			}
+		)")
+		("functionName", functionName)
+		("allocStruct", allocateMemoryStructFunction(_type))
+		("storageSize", _type.storageSize().str())
+		("member", memberSetValues)
+		.render();
+	});
+}
+
 string YulUtilFunctions::arrayConvertLengthToSize(ArrayType const& _type)
 {
 	string functionName = "array_convert_length_to_size_" + _type.identifier();
@@ -2741,11 +2797,22 @@ string YulUtilFunctions::storageSetToZeroFunction(Type const& _type)
 		else if (_type.category() == Type::Category::Array)
 			return Whiskers(R"(
 				function <functionName>(slot, offset) {
+					if iszero(eq(offset, 0)) { panic() }
 					<clearArray>(slot)
 				}
 			)")
 			("functionName", functionName)
 			("clearArray", clearStorageArrayFunction(dynamic_cast<ArrayType const&>(_type)))
+			.render();
+		else if (_type.category() == Type::Category::Struct)
+			return Whiskers(R"(
+				function <functionName>(slot, offset) {
+					if iszero(eq(offset, 0)) { panic() }
+					<clearStruct>(slot)
+				}
+			)")
+			("functionName", functionName)
+			("clearStruct", clearStorageStructFunction(dynamic_cast<StructType const&>(_type)))
 			.render();
 		else
 			solUnimplemented("setToZero for type " + _type.identifier() + " not yet implemented!");
