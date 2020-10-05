@@ -1305,6 +1305,9 @@ bool TypeChecker::visit(Conditional const& _conditional)
 
 	_conditional.annotation().isLValue = false;
 
+	if (!_conditional.annotation().lValueOfOrdinaryAssignment.set())
+		_conditional.annotation().lValueOfOrdinaryAssignment = false;
+
 	if (_conditional.annotation().willBeWrittenTo)
 		m_errorReporter.typeError(
 			2212_error,
@@ -1361,6 +1364,9 @@ bool TypeChecker::visit(Assignment const& _assignment)
 	_assignment.annotation().isLValue = false;
 	_assignment.annotation().isConstant = false;
 
+	if (!_assignment.annotation().lValueOfOrdinaryAssignment.set())
+		_assignment.annotation().lValueOfOrdinaryAssignment = false;
+
 	checkExpressionAssignment(*t, _assignment.leftHandSide());
 
 	if (TupleType const* tupleType = dynamic_cast<TupleType const*>(t))
@@ -1410,6 +1416,9 @@ bool TypeChecker::visit(TupleExpression const& _tuple)
 	_tuple.annotation().isConstant = false;
 	vector<ASTPointer<Expression>> const& components = _tuple.components();
 	TypePointers types;
+
+	if (!_tuple.annotation().lValueOfOrdinaryAssignment.set())
+		_tuple.annotation().lValueOfOrdinaryAssignment = false;
 
 	if (_tuple.annotation().willBeWrittenTo)
 	{
@@ -1534,6 +1543,10 @@ bool TypeChecker::visit(UnaryOperation const& _operation)
 	_operation.annotation().isConstant = false;
 	_operation.annotation().isPure = !modifying && *_operation.subExpression().annotation().isPure;
 	_operation.annotation().isLValue = false;
+
+	if (!_operation.annotation().lValueOfOrdinaryAssignment.set())
+		_operation.annotation().lValueOfOrdinaryAssignment = false;
+
 	return false;
 }
 
@@ -1568,6 +1581,8 @@ void TypeChecker::endVisit(BinaryOperation const& _operation)
 		*_operation.rightExpression().annotation().isPure;
 	_operation.annotation().isLValue = false;
 	_operation.annotation().isConstant = false;
+	if (!_operation.annotation().lValueOfOrdinaryAssignment.set())
+		_operation.annotation().lValueOfOrdinaryAssignment = false;
 
 	if (_operation.getOperator() == Token::Exp || _operation.getOperator() == Token::SHL)
 	{
@@ -2214,6 +2229,9 @@ bool TypeChecker::visit(FunctionCall const& _functionCall)
 	FunctionTypePointer functionType = nullptr;
 	funcCallAnno.isConstant = false;
 
+	if (!funcCallAnno.lValueOfOrdinaryAssignment.set())
+		funcCallAnno.lValueOfOrdinaryAssignment = false;
+
 	bool isLValue = false;
 
 	// Determine and assign function call kind, lvalue, purity and function type for this FunctionCall node
@@ -2345,6 +2363,10 @@ bool TypeChecker::visit(FunctionCallOptions const& _functionCallOptions)
 
 	_functionCallOptions.annotation().isPure = false;
 	_functionCallOptions.annotation().isConstant = false;
+	_functionCallOptions.annotation().isLValue = false;
+
+	if (!_functionCallOptions.annotation().lValueOfOrdinaryAssignment.set())
+		_functionCallOptions.annotation().lValueOfOrdinaryAssignment = false;
 
 	auto expressionFunctionType = dynamic_cast<FunctionType const*>(type(_functionCallOptions.expression()));
 	if (!expressionFunctionType)
@@ -2477,6 +2499,10 @@ void TypeChecker::endVisit(NewExpression const& _newExpression)
 	solAssert(!!type, "Type name not resolved.");
 
 	_newExpression.annotation().isConstant = false;
+	_newExpression.annotation().isLValue = false;
+
+	if (!_newExpression.annotation().lValueOfOrdinaryAssignment.set())
+		_newExpression.annotation().lValueOfOrdinaryAssignment = false;
 
 	if (auto contractName = dynamic_cast<UserDefinedTypeName const*>(&_newExpression.typeName()))
 	{
@@ -2537,7 +2563,10 @@ void TypeChecker::endVisit(NewExpression const& _newExpression)
 		_newExpression.annotation().isPure = true;
 	}
 	else
+	{
+		_newExpression.annotation().isPure = false;
 		m_errorReporter.fatalTypeError(8807_error, _newExpression.location(), "Contract or array type expected.");
+	}
 }
 
 bool TypeChecker::visit(MemberAccess const& _memberAccess)
@@ -2547,6 +2576,9 @@ bool TypeChecker::visit(MemberAccess const& _memberAccess)
 	ASTString const& memberName = _memberAccess.memberName();
 
 	auto& annotation = _memberAccess.annotation();
+
+	if (!annotation.lValueOfOrdinaryAssignment.set())
+		annotation.lValueOfOrdinaryAssignment = false;
 
 	// Retrieve the types of the arguments if this is used to call a function.
 	auto const& arguments = annotation.arguments;
@@ -2720,6 +2752,8 @@ bool TypeChecker::visit(MemberAccess const& _memberAccess)
 			)
 				annotation.isPure = *_memberAccess.expression().annotation().isPure;
 		}
+		else
+			annotation.isLValue = false;
 	}
 	else if (exprType->category() == Type::Category::Module)
 	{
@@ -2917,6 +2951,9 @@ bool TypeChecker::visit(IndexAccess const& _access)
 		isPure = false;
 	_access.annotation().isPure = isPure;
 
+	if (!_access.annotation().lValueOfOrdinaryAssignment.set())
+		_access.annotation().lValueOfOrdinaryAssignment = false;
+
 	return false;
 }
 
@@ -2943,6 +2980,9 @@ bool TypeChecker::visit(IndexRangeAccess const& _access)
 
 	_access.annotation().isLValue = isLValue;
 	_access.annotation().isPure = isPure;
+
+	if (!_access.annotation().lValueOfOrdinaryAssignment.set())
+		_access.annotation().lValueOfOrdinaryAssignment = false;
 
 	TypePointer exprType = type(_access.baseExpression());
 	if (exprType->category() == Type::Category::TypeType)
@@ -3015,6 +3055,10 @@ vector<Declaration const*> TypeChecker::cleanOverloadedDeclarations(
 bool TypeChecker::visit(Identifier const& _identifier)
 {
 	IdentifierAnnotation& annotation = _identifier.annotation();
+
+	if (!annotation.lValueOfOrdinaryAssignment.set())
+		annotation.lValueOfOrdinaryAssignment = false;
+
 	if (!annotation.referencedDeclaration)
 	{
 		annotation.overloadedDeclarations = cleanOverloadedDeclarations(_identifier, annotation.candidateDeclarations);
@@ -3142,6 +3186,9 @@ void TypeChecker::endVisit(ElementaryTypeNameExpression const& _expr)
 	_expr.annotation().isPure = true;
 	_expr.annotation().isLValue = false;
 	_expr.annotation().isConstant = false;
+
+	if (!_expr.annotation().lValueOfOrdinaryAssignment.set())
+		_expr.annotation().lValueOfOrdinaryAssignment = false;
 }
 
 void TypeChecker::endVisit(Literal const& _literal)
@@ -3199,6 +3246,9 @@ void TypeChecker::endVisit(Literal const& _literal)
 	_literal.annotation().isPure = true;
 	_literal.annotation().isLValue = false;
 	_literal.annotation().isConstant = false;
+
+	if (!_literal.annotation().lValueOfOrdinaryAssignment.set())
+		_literal.annotation().lValueOfOrdinaryAssignment = false;
 }
 
 void TypeChecker::endVisit(UsingForDirective const& _usingFor)
