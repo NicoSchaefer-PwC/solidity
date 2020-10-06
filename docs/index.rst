@@ -35,19 +35,23 @@ read our :doc:`contributors guide <contributing>` for more details.
 Getting Started
 ---------------
 
+**1. Understand the Smart Contract Basics**
+
 If you are new to the concept of smart contracts we recommend you to get started by digging
 into the "Introduction to Smart Contracts" section, which covers:
 * :ref:`A simple example smart contract <simple-smart-contract>` written in Solidity.
 * Blockchain Basics.
 * The Ethereum Virtual Machine.
 
+**2. Get to Know Solidity**
+
 Once you are accustomed to the basics, we recommend you read the :doc:`"Solidity by Example" <solidity-by-example>`
 and “Language Description” sections to understand the core concepts of the language.
 
-If you want to learn more about building decentralized applications on Ethereum, the
-`Ethereum Developer Resources <https://ethereum.org/en/developers/>`_
-can help you with further generic documentation around Ethereum, and a wide selection of tutorials,
-tools and development frameworks.
+**3. Install the Solidity Compiler**
+
+There are various ways to install the Solidity compiler,
+simply choose your prefered option and follow the steps outlined on the :ref:`installation page <installing-solidity>`.
 
 .. hint::
   You can try out code examples in your browser with the
@@ -62,6 +66,13 @@ tools and development frameworks.
     blockchains and smart contracts have their own unique issues to
     watch out for, so before working on production code, make sure you read the
     :ref:`security_considerations` section.
+
+**4. Learn More**
+
+If you want to learn more about building decentralized applications on Ethereum, the
+`Ethereum Developer Resources <https://ethereum.org/en/developers/>`_
+can help you with further generic documentation around Ethereum, and a wide selection of tutorials,
+tools and development frameworks.
 
 If you have any questions, you can try searching for answers or asking on the
 `Ethereum StackExchange <https://ethereum.stackexchange.com/>`_, or
