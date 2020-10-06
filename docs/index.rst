@@ -26,30 +26,37 @@ a 0.x version number `to indicate this fast pace of change <https://semver.org/#
 
 .. warning::
 
-  Solidity recently released the 0.6.x version that introduced a lot of breaking
-  changes. Make sure you read :doc:`the full list <060-breaking-changes>`.
+  Solidity recently released the 0.7.x version that introduced a lot of breaking
+  changes. Make sure you read :doc:`the full list <070-breaking-changes>`.
 
-Language Documentation
-----------------------
+Ideas for improving Solidity or this documentation are always welcome,
+read our :doc:`contributors guide <contributing>` for more details.
 
-If you are new to the concept of smart contracts we recommend you start with
-:ref:`an example smart contract <simple-smart-contract>` written
-in Solidity. When you are ready for more detail, we recommend you read the
-:doc:`"Solidity by Example" <solidity-by-example>` and
-"Language Description" sections to learn the core concepts of the language.
+Getting Started
+---------------
 
-For further reading, try :ref:`the basics of blockchains <blockchain-basics>`
-and details of the :ref:`Ethereum Virtual Machine <the-ethereum-virtual-machine>`.
+If you are new to the concept of smart contracts we recommend you to get started by digging
+into the "Introduction to Smart Contracts" section, which covers:
+* :ref:`A simple example smart contract <simple-smart-contract>` written in Solidity.
+* Blockchain Basics.
+* The Ethereum Virtual Machine.
+
+Once you are accustomed to the basics, we recommend you read the :doc:`"Solidity by Example" <solidity-by-example>`
+and “Language Description” sections to understand the core concepts of the language.
+
+If you want to learn more about building decentralized applications on Ethereum, the
+`Ethereum Developer Resources <https://ethereum.org/en/developers/>`_
+can help you with further generic documentation around Ethereum, and a wide selection of tutorials,
+tools and development frameworks.
 
 .. hint::
-  You can always try out code examples in your browser with the
+  You can try out code examples in your browser with the
   `Remix IDE <https://remix.ethereum.org>`_. Remix is a web browser based IDE
-  that allows you to write Solidity smart contracts, then deploy and run the
-  smart contracts. It can take a while to load, so please be patient.
+  that allows you to write, deploy and administer Solidity smart contracts.
 
 .. warning::
     As humans write software, it can have bugs. You should follow established
-    software development best-practices when writing your smart contracts, this
+    software development best-practices when writing your smart contracts. This
     includes code review, testing, audits, and correctness proofs. Smart contract
     users are sometimes more confident with code than their authors, and
     blockchains and smart contracts have their own unique issues to
@@ -57,11 +64,8 @@ and details of the :ref:`Ethereum Virtual Machine <the-ethereum-virtual-machine>
     :ref:`security_considerations` section.
 
 If you have any questions, you can try searching for answers or asking on the
-`Ethereum Stackexchange <https://ethereum.stackexchange.com/>`_, or
-our `gitter channel <https://gitter.im/ethereum/solidity/>`_.
-
-Ideas for improving Solidity or this documentation are always welcome,
-read our :doc:`contributors guide <contributing>` for more details.
+`Ethereum StackExchange <https://ethereum.stackexchange.com/>`_, or
+our `Gitter channel <https://gitter.im/ethereum/solidity/>`_.
 
 .. _translations:
 
