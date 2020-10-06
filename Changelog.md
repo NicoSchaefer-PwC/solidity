@@ -10,6 +10,7 @@ Compiler Features:
 
 
 Bugfixes:
+ * Code generator: Fix modifiers being affected by experimental pragmas used in modules they're called from.
  * Type Checker: Fix internal compiler error when calling `.push(<arg>)` for a storage array with a nested mapping.
  * Type Checker: Add missing checks for calls using types incompatible with ABIEncoderV1 in modules where ABIEncoderV2 is not enabled.
 

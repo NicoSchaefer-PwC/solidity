@@ -1281,6 +1281,7 @@ void ContractCompiler::appendModifierOrFunctionCode()
 	unsigned stackSurplus = 0;
 	Block const* codeBlock = nullptr;
 	vector<VariableDeclaration const*> addedVariables;
+	ModifierDefinition const* modifier = nullptr;
 
 	m_modifierDepth++;
 	m_context.setModifierDepth(m_modifierDepth);
@@ -1301,33 +1302,43 @@ void ContractCompiler::appendModifierOrFunctionCode()
 		{
 			solAssert(*modifierInvocation->name()->annotation().requiredLookup == VirtualLookup::Virtual, "");
 
-			ModifierDefinition const& modifier = dynamic_cast<ModifierDefinition const&>(
+			modifier = &dynamic_cast<ModifierDefinition const&>(
 				*modifierInvocation->name()->annotation().referencedDeclaration
 			).resolveVirtual(m_context.mostDerivedContract());
-			CompilerContext::LocationSetter locationSetter(m_context, modifier);
+			CompilerContext::LocationSetter locationSetter(m_context, *modifier);
 			std::vector<ASTPointer<Expression>> const& modifierArguments =
 				modifierInvocation->arguments() ? *modifierInvocation->arguments() : std::vector<ASTPointer<Expression>>();
 
-			solAssert(modifier.parameters().size() == modifierArguments.size(), "");
-			for (unsigned i = 0; i < modifier.parameters().size(); ++i)
+			solAssert(modifier->parameters().size() == modifierArguments.size(), "");
+			for (unsigned i = 0; i < modifier->parameters().size(); ++i)
 			{
-				m_context.addVariable(*modifier.parameters()[i]);
-				addedVariables.push_back(modifier.parameters()[i].get());
+				m_context.addVariable(*modifier->parameters()[i]);
+				addedVariables.push_back(modifier->parameters()[i].get());
 				compileExpression(
 					*modifierArguments[i],
-					modifier.parameters()[i]->annotation().type
+					modifier->parameters()[i]->annotation().type
 				);
 			}
 
-			stackSurplus = CompilerUtils::sizeOnStack(modifier.parameters());
-			codeBlock = &modifier.body();
+			stackSurplus = CompilerUtils::sizeOnStack(modifier->parameters());
+			codeBlock = &modifier->body();
 		}
 	}
 
 	if (codeBlock)
 	{
+		std::set<ExperimentalFeature> experimentalFeaturesOutside = m_context.experimentalFeaturesActive();
+		std::set<ExperimentalFeature> experimentalFeaturesInside = (modifier ?
+			modifier->sourceUnit().annotation().experimentalFeatures :
+			experimentalFeaturesOutside
+		);
+		m_context.setExperimentalFeatures(experimentalFeaturesInside);
+
 		m_returnTags.emplace_back(m_context.newTag(), m_context.stackHeight());
 		codeBlock->accept(*this);
+
+		solAssert(m_context.experimentalFeaturesActive() == experimentalFeaturesInside, "");
+		m_context.setExperimentalFeatures(experimentalFeaturesOutside);
 
 		solAssert(!m_returnTags.empty(), "");
 		m_context << m_returnTags.back().first;
