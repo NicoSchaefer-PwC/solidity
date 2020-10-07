@@ -72,7 +72,7 @@ simply choose your preferred option and follow the steps outlined on the :ref:`i
 
 If you want to learn more about building decentralized applications on Ethereum, the
 `Ethereum Developer Resources <https://ethereum.org/en/developers/>`_
-can help you with further generic documentation around Ethereum, and a wide selection of tutorials,
+can help you with further general documentation around Ethereum, and a wide selection of tutorials,
 tools and development frameworks.
 
 If you have any questions, you can try searching for answers or asking on the
