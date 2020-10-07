@@ -51,12 +51,13 @@ and “Language Description” sections to understand the core concepts of the l
 **3. Install the Solidity Compiler**
 
 There are various ways to install the Solidity compiler,
-simply choose your prefered option and follow the steps outlined on the :ref:`installation page <installing-solidity>`.
+simply choose your preferred option and follow the steps outlined on the :ref:`installation page <installing-solidity>`.
 
 .. hint::
-  You can try out code examples in your browser with the
+  You can try out code examples directly in your browser with the
   `Remix IDE <https://remix.ethereum.org>`_. Remix is a web browser based IDE
-  that allows you to write, deploy and administer Solidity smart contracts.
+  that allows you to write, deploy and administer Solidity smart contracts, without
+  the need to install Solidity locally.
 
 .. warning::
     As humans write software, it can have bugs. You should follow established
