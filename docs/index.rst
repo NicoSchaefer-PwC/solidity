@@ -40,8 +40,8 @@ Getting Started
 If you are new to the concept of smart contracts we recommend you to get started by digging
 into the "Introduction to Smart Contracts" section, which covers:
 * :ref:`A simple example smart contract <simple-smart-contract>` written in Solidity.
-* Blockchain Basics.
-* The Ethereum Virtual Machine.
+* :ref:`Blockchain Basics <blockchain-basics>`.
+* :ref:`The Ethereum Virtual Machine <the-ethereum-virtual-machine>`.
 
 **2. Get to Know Solidity**
 
