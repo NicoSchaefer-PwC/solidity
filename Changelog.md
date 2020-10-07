@@ -1,4 +1,4 @@
-### 0.7.3 (unreleased)
+### 0.7.3 (2020-10-07)
 
 Important Bugfixes:
  * Code Generator: Properly cleanup after copying dynamic-array to storage for packed types.
